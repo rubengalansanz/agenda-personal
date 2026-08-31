@@ -50,3 +50,14 @@ agenda.db-wal
 
 # ficheros markdown
 agenda-personal.md
+GEMINI.md
+
+# carpetas ocultas
+/.claude/
+/.codegraph/
+/.gemini/
+
+# ficheros json
+.mcp.json
+opencode.jsonc
+

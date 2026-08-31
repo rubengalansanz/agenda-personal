@@ -26,7 +26,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full">
+      <body className="h-full">
         <script
           dangerouslySetInnerHTML={{
             __html:
@@ -34,7 +34,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           }}
         />
         <ToastProvider>
-          <div className="flex min-h-full">
+          <div className="flex h-full">
             <Sidebar />
             <main className="flex-1 overflow-x-hidden">{children}</main>
           </div>
