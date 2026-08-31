@@ -11,6 +11,16 @@ export async function GET() {
   await connection();
   const rows = await db.select().from(events).orderBy(asc(events.startAt));
   const ics = eventsToICal(rows);
+
+  if (typeof window !== "undefined" && window.electronAPI?.isElectron) {
+    return new NextResponse(ics, {
+      headers: {
+        "Content-Type": "text/calendar; charset=utf-8",
+        "Content-Disposition": 'attachment; filename="agenda.ics"',
+      },
+    });
+  }
+
   return new NextResponse(ics, {
     headers: {
       "Content-Type": "text/calendar; charset=utf-8",

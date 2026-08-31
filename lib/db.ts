@@ -6,8 +6,16 @@ const globalForDb = globalThis as unknown as {
   db?: BetterSQLite3Database<typeof schema>;
 };
 
+function getDbPath(): string {
+  if (process.env.DB_FILE) return process.env.DB_FILE;
+  if (typeof window !== "undefined" && window.electronAPI?.isElectron) {
+    return "agenda.db";
+  }
+  return "agenda.db";
+}
+
 function createDb() {
-  const sqlite = new Database(process.env.DB_FILE ?? "agenda.db");
+  const sqlite = new Database(getDbPath());
   sqlite.pragma("journal_mode = WAL");
   sqlite.pragma("foreign_keys = ON");
   return drizzle(sqlite, { schema });

@@ -12,6 +12,10 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Electron compiled output
+    "electron/**/*.js",
+    // Compiled data layer output
+    "lib/**/*.js",
   ]),
 ]);
 

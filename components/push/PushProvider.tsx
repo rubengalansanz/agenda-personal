@@ -10,7 +10,23 @@ import { useToast } from "@/components/ui";
 
 const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
 
-type Status = "loading" | "unsupported" | "default" | "granted" | "denied" | "subscribed";
+declare global {
+  interface Window {
+    electronAPI?: {
+      isElectron: boolean;
+      showNotification: (title: string, body: string) => Promise<void>;
+    };
+  }
+}
+
+type Status =
+  | "loading"
+  | "unsupported"
+  | "default"
+  | "granted"
+  | "denied"
+  | "subscribed"
+  | "electron";
 
 export function PushProvider() {
   const [status, setStatus] = useState<Status>("loading");
@@ -19,10 +35,16 @@ export function PushProvider() {
   const notified = useRef<Set<string>>(new Set());
 
   useEffect(() => {
-    if (typeof window === "undefined" || !("serviceWorker" in navigator)) {
-      Promise.resolve().then(() => setStatus("unsupported"));
+    if (typeof window !== "undefined" && window.electronAPI?.isElectron) {
+      queueMicrotask(() => setStatus("electron"));
       return;
     }
+
+    if (typeof window === "undefined" || !("serviceWorker" in navigator)) {
+      queueMicrotask(() => setStatus("unsupported"));
+      return;
+    }
+
     let cancelled = false;
     navigator.serviceWorker
       .register("/sw.js")
@@ -49,7 +71,8 @@ export function PushProvider() {
   }, []);
 
   useEffect(() => {
-    if (status === "loading" || status === "unsupported") return;
+    if (status === "loading" || status === "unsupported" || status === "electron")
+      return;
     const tick = async () => {
       const due = await listDueRemindersAction();
       for (const d of due) {
@@ -73,26 +96,15 @@ export function PushProvider() {
     return () => clearInterval(id);
   }, [status]);
 
-  const enable = async () => {
-    if (!regRef.current || !VAPID_PUBLIC_KEY) return;
-    const perm = await Notification.requestPermission();
-    if (perm !== "granted") {
-      setStatus("denied");
-      toast("Permiso de notificaciones denegado");
-      return;
-    }
-    const sub = await regRef.current.pushManager.subscribe({
-      userVisibleOnly: true,
-      applicationServerKey: VAPID_PUBLIC_KEY,
-    });
-    const raw = sub.toJSON() as unknown as StoredSubscriptionInput;
-    await subscribePushAction({
-      endpoint: raw.endpoint,
-      keys: raw.keys,
-    });
-    setStatus("subscribed");
-    toast("Recordatorios activados");
-  };
+  if (status === "loading" || status === "electron") {
+    return status === "electron" ? (
+      <p className="px-3 py-2 text-xs text-emerald-600 dark:text-emerald-400">
+        ● Recordatorios activos (nativo)
+      </p>
+    ) : (
+      <p className="px-3 py-2 text-xs text-zinc-400">Cargando...</p>
+    );
+  }
 
   if (status === "unsupported") {
     return (
@@ -121,6 +133,33 @@ export function PushProvider() {
         : "Activar recordatorios"}
     </button>
   );
+
+  function enable() {
+    if (!regRef.current || !VAPID_PUBLIC_KEY) return;
+    Notification.requestPermission().then((perm) => {
+      if (perm !== "granted") {
+        setStatus("denied");
+        toast("Permiso de notificaciones denegado");
+        return;
+      }
+      regRef.current!.pushManager
+        .subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: VAPID_PUBLIC_KEY,
+        })
+        .then((sub) => {
+          const raw = sub.toJSON() as unknown as StoredSubscriptionInput;
+          return subscribePushAction({
+            endpoint: raw.endpoint,
+            keys: raw.keys,
+          });
+        })
+        .then(() => {
+          setStatus("subscribed");
+          toast("Recordatorios activados");
+        });
+    });
+  }
 }
 
 type StoredSubscriptionInput = {
