@@ -1,36 +1,96 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Agenda Personal
 
-## Getting Started
+Aplicación de agenda personal con calendario, tareas, contactos, notas y planner. Funciona como aplicación web y de escritorio (Electron).
 
-First, run the development server:
+## Funcionalidades
+
+- **Calendario**: Eventos y citas con recordatorios
+- **Tareas**: Gestión de tareas pendientes con prioridades y categorías
+- **Contactos**: Agenda de contactos con múltiples teléfonos y direcciones
+- **Notas**: Bloc de notas con categorías
+- **Planner**: Gestión de proyectos con hitos y seguimiento de progreso
+- **Cumpleaños/Aniversarios**: Fechas recurrentes con recordatorios
+- **Enlaces**: Referencias cruzadas entre registros
+- **Notificaciones Push**: Recordatorios mediante Web Push
+
+## Stack Tecnológico
+
+- **Frontend**: Next.js 16.3.1, React 19.2.8, Tailwind CSS 4
+- **Backend**: Next.js API Routes
+- **Base de datos**: SQLite con Drizzle ORM
+- **Escritorio**: Electron 44
+- **Lenguaje**: TypeScript
+
+## Inicio Rápido
 
 ```bash
+# Instalar dependencias
+npm install
+
+# Iniciar servidor de desarrollo
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+# Abrir http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Scripts Disponibles
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Comando | Descripción |
+|---------|-------------|
+| `npm run dev` | Servidor de desarrollo Next.js |
+| `npm run build` | Construir la aplicación |
+| `npm run start` | Iniciar producción |
+| `npm run lint` | Verificar código con ESLint |
+| `npm run db:generate` | Generar migraciones de Drizzle |
+| `npm run db:migrate` | Ejecutar migraciones |
+| `npm run db:push` | Push de esquema a la DB |
+| `npm run db:studio` | Abrir Drizzle Studio |
+| `npm run electron:dev` | Desarrollo con Electron |
+| `npm run electron:preview` | Vista previa Electron |
+| `npm run electron:dist` | Empaquetar para distribución |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Base de datos
 
-## Learn More
+Usa SQLite con Drizzle ORM. El esquema está en `db/schema.ts` e incluye:
 
-To learn more about Next.js, take a look at the following resources:
+- `events` - Calendario/Eventos
+- `tasks` - Tareas
+- `contacts` - Contactos
+- `notes` - Notas
+- `projects` - Proyectos del planner
+- `planner_items` - Hitos de proyectos
+- `anniversaries` - Cumpleaños/Aniversarios
+- `links` - Enlaces entre registros
+- `push_subscriptions` - Suscripciones Web Push
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Estructura
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+├── app/                  # Rutas Next.js (App Router)
+│   ├── calendario/       # Vista del calendario
+│   ├── tareas/           # Gestión de tareas
+│   ├── contactos/        # Agenda de contactos
+│   ├── notas/            # Bloc de notas
+│   ├── planner/          # Gestor de proyectos
+│   ├── cumpleanos/       # Cumpleaños y aniversarios
+│   └── api/              # API Routes
+├── components/           # Componentes React
+├── db/                   # Esquema y migraciones Drizzle
+├── electron/             # Código de Electron
+├── lib/                  # Utilidades compartidas
+└── scripts/              # Scripts de utilidad
+```
 
-## Deploy on Vercel
+## Electron
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+La aplicación se puede empaquetar como app de escritorio:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+# Desarrollo con Electron
+npm run electron:dev
+
+# Empaquetar para distribución
+npm run electron:dist
+```
+
+Soporta Linux (AppImage, deb), macOS (dmg) y Windows (NSIS).
