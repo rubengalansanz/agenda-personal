@@ -62,3 +62,9 @@ GEMINI.md
 opencode.jsonc
 package-lock.json
 
+# artifacts compilados de TS (regenerados con la build de electron)
+/electron/*.js
+/electron/*.js.map
+/lib/data/reminders.js
+/lib/data/reminders.js.map
+

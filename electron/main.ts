@@ -48,10 +48,12 @@ function startNextServer(): Promise<void> {
       ...process.env,
       PORT: String(PORT),
       DB_FILE: getDbPath(),
+      MIGRATIONS_DIR: path.join(process.resourcesPath, "db", "migrations"),
       NODE_ENV: "production",
+      ELECTRON_RUN_AS_NODE: "1",
     };
 
-    const child = spawn("node", [".next/standalone/server.js"], {
+    const child = spawn(process.execPath, [".next/standalone/server.js"], {
       cwd: getProjectRoot(),
       env,
       stdio: "inherit",

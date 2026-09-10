@@ -16,6 +16,8 @@
     "electron:dev": "npm run electron:build:ts && concurrently \"next dev -p 3456\" \"wait-on http://localhost:3456/calendario && electron .\"",
     "electron:preview": "npm run build && npm run electron:build:ts && electron .",
     "electron:dist": "npm run build && npm run electron:build:ts && electron-builder",
+    "postbuild": "node scripts/standalone-assets.mjs",
+    "typecheck": "tsc --noEmit",
     "postinstall": "electron-builder install-app-deps"
   },
   "dependencies": {
@@ -56,6 +58,10 @@
       "public/**/*",
       "next.config.ts",
       "package.json"
+    ],
+    "asarUnpack": [
+      ".next/standalone/**/*",
+      "**/*.node"
     ],
     "extraResources": [
       {
