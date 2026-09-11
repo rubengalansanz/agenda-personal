@@ -1,6 +1,12 @@
 {
   "name": "agenda-personal",
   "version": "0.1.0",
+  "description": "Agenda personal de escritorio — calendario, tareas, contactos y notas",
+  "author": {
+    "name": "Rubén Galán",
+    "email": "ruben.galansanz@gmail.com"
+  },
+  "license": "MIT",
   "private": true,
   "main": "electron/main.js",
   "scripts": {
@@ -72,7 +78,8 @@
     "linux": {
       "target": [
         "AppImage",
-        "deb"
+        "deb",
+        "rpm"
       ],
       "category": "Office"
     },
@@ -84,12 +91,26 @@
     },
     "win": {
       "target": [
-        "nsis"
+        "nsis",
+        "msi"
       ]
     },
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true
+    },
+    "rpm": {
+      "packageCategory": "Applications/Office",
+      "license": "MIT",
+      "vendor": "Rubén Galán"
+    },
+    "msi": {
+      "oneClick": false,
+      "perMachine": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "menuCategory": true,
+      "runAfterFinish": true
     }
   }
 }

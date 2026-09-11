@@ -60,7 +60,9 @@ GEMINI.md
 # ficheros json
 .mcp.json
 opencode.jsonc
-package-lock.json
+
+# artifacts del empaquetado
+release/
 
 # artifacts compilados de TS (regenerados con la build de electron)
 /electron/*.js
