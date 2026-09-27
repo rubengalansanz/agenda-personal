@@ -2,6 +2,7 @@ import { isNotNull } from "drizzle-orm";
 import { connection } from "next/server";
 import { db } from "@/lib/db";
 import { events, anniversaries } from "@/db/schema";
+import { parseMonthDay } from "@/lib/anniversary-date";
 
 export type ReminderSource =
   | {
@@ -77,15 +78,15 @@ function eventDueAt(startAt: string, reminderMin: number | null): Date | null {
 
 function anniversaryDueAt(date: string, reminderMin: number | null): Date | null {
   if (reminderMin == null) return null;
-  const parts = date.split("-").map(Number);
-  const mm = parts[0];
-  const dd = parts[1];
-  if (!mm || !dd) return null;
+  const md = parseMonthDay(date);
+  if (!md) return null;
   const now = new Date();
   const year = now.getFullYear();
-  let d = new Date(year, mm - 1, dd, 9, 0, 0, 0);
+  let d = new Date(year, md.month - 1, md.day, 9, 0, 0, 0);
+  if (d.getMonth() !== md.month - 1 || d.getDate() !== md.day) return null;
   if (d.getTime() < now.getTime()) {
-    d = new Date(year + 1, mm - 1, dd, 9, 0, 0, 0);
+    d = new Date(year + 1, md.month - 1, md.day, 9, 0, 0, 0);
+    if (d.getMonth() !== md.month - 1 || d.getDate() !== md.day) return null;
   }
   d.setMinutes(d.getMinutes() - reminderMin);
   return d;

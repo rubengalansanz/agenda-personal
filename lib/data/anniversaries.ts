@@ -2,6 +2,7 @@ import { asc, eq } from "drizzle-orm";
 import { connection } from "next/server";
 import { db } from "@/lib/db";
 import { anniversaries, type AnniversaryRow } from "@/db/schema";
+import { parseMonthDay } from "@/lib/anniversary-date";
 
 export type AnniversaryInsert = typeof anniversaries.$inferInsert;
 export type UpcomingAnniversary = AnniversaryRow & {
@@ -9,16 +10,23 @@ export type UpcomingAnniversary = AnniversaryRow & {
   daysUntil: number;
 };
 
-/** Calcula la próxima ocurrencia anual de `MM-DD` dentro de [from, to]. */
+/** Calcula la próxima ocurrencia anual de un aniversario dentro de [from, to].
+ * Acepta ISO completo (`YYYY-MM-DD...`, lo que guarda `dateToIso`) y
+ * `MM-DD` pelado (filas legacy). Fechas inválidas → null. */
 export function nextOccurrence(
   date: string,
   from: Date,
   to: Date,
 ): string | null {
-  const [mm, dd] = date.split("-");
-  if (!mm || !dd) return null;
+  const md = parseMonthDay(date);
+  if (!md) return null;
   for (const year of [from.getFullYear(), from.getFullYear() + 1]) {
-    const candidate = new Date(year, Number(mm) - 1, Number(dd), 0, 0, 0, 0);
+    const candidate = new Date(year, md.month - 1, md.day, 0, 0, 0, 0);
+    if (
+      candidate.getMonth() !== md.month - 1 ||
+      candidate.getDate() !== md.day
+    )
+      continue;
     if (candidate >= from && candidate <= to) {
       return candidate.toISOString();
     }
