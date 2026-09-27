@@ -76,22 +76,43 @@ export async function sendPush(
   }
 }
 
-/** Envía push a todas las suscripciones guardadas para los recordatorios debidos. */
+/** Memoria en proceso de recordatorios ya notificados (`kind:id` → epoch ms).
+ * Evita reenviar el mismo recordatorio en cada tick mientras sigue dentro de
+ * la ventana de `listDueReminders`. Se pierde al reiniciar el servidor
+ * (aceptable para uso personal: a lo sumo un reenvío por ventana). */
+const lastNotified = new Map<string, number>();
+const DEDUP_WINDOW_MS = 30 * 60_000;
+
+/** Envía push a todas las suscripciones guardadas para los recordatorios debidos.
+ * Solo envía los debidos no notificados en la ventana actual; si no hay nada
+ * nuevo, no envía nada y devuelve 0. */
 export async function notifyDueReminders(): Promise<number> {
   if (!ensureConfigured()) return 0;
   const due = await listDueReminders();
   if (due.length === 0) return 0;
+  const now = Date.now();
+  const fresh = due.filter((d) => {
+    const last = lastNotified.get(`${d.kind}:${d.id}`);
+    return last == null || now - last > DEDUP_WINDOW_MS;
+  });
+  for (const [key, at] of lastNotified) {
+    if (now - at > DEDUP_WINDOW_MS) lastNotified.delete(key);
+  }
+  if (fresh.length === 0) return 0;
   const subs = await getSubscriptions();
   if (subs.length === 0) return 0;
   const payload = {
     title: "Agenda · Recordatorio",
-    body: due.map((d) => d.title).join(", "),
+    body: fresh.map((d) => d.title).join(", "),
     tag: "agenda-reminders",
     url: "/calendario",
   };
   let sent = 0;
   for (const s of subs) {
     if (await sendPush(s, payload)) sent += 1;
+  }
+  if (sent > 0) {
+    for (const d of fresh) lastNotified.set(`${d.kind}:${d.id}`, now);
   }
   return sent;
 }
