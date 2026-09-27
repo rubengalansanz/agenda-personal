@@ -51,11 +51,17 @@ agenda.db-wal
 # ficheros markdown
 agenda-personal.md
 GEMINI.md
+session-agenda-personal_*
 
 # carpetas ocultas
 /.claude/
 /.codegraph/
 /.gemini/
+/.atl/
+
+# ficheros ocultos
+.gga
+.gentle-ai-default-agent.json
 
 # ficheros json
 .mcp.json
