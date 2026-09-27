@@ -48,6 +48,27 @@ npm run dev
 | `npm run electron:dev` | Desarrollo con Electron |
 | `npm run electron:preview` | Vista previa Electron |
 | `npm run electron:dist` | Empaquetar para distribución |
+| `npm run notify` | Scheduler local de pushes (cada 5 min, requiere `NOTIFY_SECRET`) |
+
+## Notificaciones push (servidor)
+
+El endpoint `POST /api/notify` envía Web Push a los recordatorios debidos.
+Está protegido por `NOTIFY_SECRET` (header `Authorization: Bearer <secret>`);
+sin esa variable devuelve 503. Variables en `.env.local` (no commitear):
+
+```bash
+NEXT_PUBLIC_VAPID_PUBLIC_KEY=...
+VAPID_PRIVATE_KEY=...
+VAPID_SUBJECT=mailto:vos@ejemplo.com
+NOTIFY_SECRET=un-secreto-largo-azaroso
+```
+
+```bash
+# Scheduler local (usa BASE_URL=http://localhost:3000 por defecto)
+NOTIFY_SECRET=... npm run notify
+```
+
+En producción, un cron externo que haga `POST` al endpoint con el secret.
 
 ## Base de datos
 

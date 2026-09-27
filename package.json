@@ -23,6 +23,7 @@
     "electron:preview": "npm run build && npm run electron:build:ts && electron .",
     "electron:dist": "npm run build && npm run electron:build:ts && electron-builder",
     "postbuild": "node scripts/standalone-assets.mjs",
+    "notify": "node scripts/notify.mjs",
     "typecheck": "tsc --noEmit",
     "postinstall": "electron-builder install-app-deps"
   },
@@ -32,6 +33,7 @@
     "drizzle-kit": "^0.31.10",
     "drizzle-orm": "^0.45.2",
     "next": "16.3.1",
+    "node-cron": "^4.6.0",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "web-push": "^3.6.7"
