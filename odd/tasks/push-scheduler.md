@@ -58,3 +58,4 @@ Implementación autorizada por el usuario ("sigue con el scheduler de pushes"). 
 - `node --check scripts/notify.mjs` → OK; sin secret → exit 1 con mensaje (fail fast).
 - `npm run build` → Compiled successfully, 12 rutas incl. `ƒ /api/notify` + postbuild OK.
 - Nota: el primer server de smoke no murió con `kill $SRV` (quedó el wrapper); se detuvo con kill explícito + `pkill -f`. Los procesos `next-server v16.2.11` ajenos no se tocaron (otro proyecto).
+- Commit work-unit: `b9e2dc6` en rama `feature/push-scheduler` (hook Guardian Angel: review PASSED). Merge a master + push pendientes (decisión tuya).
