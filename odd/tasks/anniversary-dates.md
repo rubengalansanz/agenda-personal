@@ -55,3 +55,4 @@ Implementación autorizada por el usuario ("Ponte con lo que haya que realizar")
 - `npm run lint` → pass (exit 0, sin output).
 - Smoke node sobre `lib/anniversary-date.ts` real: ISO `"1990-05-14T00:00:00.000Z"` → `{5,14}`; `"05-14"` → `{5,14}`; `"2024-02-29..."` → `{2,29}`; `"1990-13-40"` → `null`; `""` → `null`.
 - `npm run build` → Compiled successfully, TypeScript OK en 52s, 11 rutas (incl. `ƒ /cumpleanos` y `ƒ /api/export/ics`) + postbuild OK.
+- Commit work-unit: `6714b62` en rama `fix/anniversary-dates` (hook Guardian Angel: review PASSED). Push/PR pendientes (decisión tuya).
