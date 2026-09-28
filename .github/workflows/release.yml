@@ -28,6 +28,11 @@ jobs:
 
       - name: Build
         run: npm run build
+        env:
+          DB_FILE: ":memory:"
+
+      - name: Build Electron main
+        run: npm run electron:build:ts
 
       - name: Package
         run: npx electron-builder --linux --publish never
@@ -58,6 +63,11 @@ jobs:
 
       - name: Build
         run: npm run build
+        env:
+          DB_FILE: ":memory:"
+
+      - name: Build Electron main
+        run: npm run electron:build:ts
 
       - name: Package
         run: npx electron-builder --mac --publish never
@@ -85,6 +95,11 @@ jobs:
 
       - name: Build
         run: npm run build
+        env:
+          DB_FILE: ":memory:"
+
+      - name: Build Electron main
+        run: npm run electron:build:ts
 
       - name: Package
         run: npx electron-builder --win --publish never
