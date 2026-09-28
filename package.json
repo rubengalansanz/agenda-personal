@@ -103,7 +103,6 @@
     },
     "rpm": {
       "packageCategory": "Applications/Office",
-      "license": "MIT",
       "vendor": "Rubén Galán"
     },
     "msi": {
