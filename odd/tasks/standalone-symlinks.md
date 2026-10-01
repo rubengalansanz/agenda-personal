@@ -23,4 +23,4 @@ Autorizado ("Impleméntalo, por favor"). Tocables: `scripts/standalone-assets.mj
 ## Verification evidence
 - Build local: postbuild log `removed redundant traced link` ×2; dir anidado queda con 0 entradas.
 - `createRequire` desde `.next/standalone/.next/server/app/page.js` resuelve better-sqlite3 y web-push a los dirs reales.
-- CI (job build-windows) como verificación final.
+- CI (job build-windows) como verificación final: run 36903468939 → **los 3 jobs success** (primera vez en verde desde que existe el workflow).
