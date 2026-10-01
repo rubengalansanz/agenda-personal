@@ -12,6 +12,17 @@ function getProjectRoot(): string {
   return path.join(__dirname, "..");
 }
 
+/**
+ * Directorio desde el que lanzar el servidor Next standalone.
+ * En dev es la raíz del proyecto; empaquetado NO puede ser `..` de `__dirname`
+ * (eso es el fichero `app.asar`, y spawn con cwd=fichero da ENOTDIR), sino
+ * `app.asar.unpacked`, donde asarUnpack deja `.next/standalone/**` en disco.
+ */
+function getServerDir(): string {
+  if (!app.isPackaged) return getProjectRoot();
+  return path.join(process.resourcesPath, "app.asar.unpacked");
+}
+
 function getDbPath(): string {
   return path.join(app.getPath("userData"), "agenda.db");
 }
@@ -44,6 +55,7 @@ function startNextServer(): Promise<void> {
   }
 
   return new Promise((resolve, reject) => {
+    const serverDir = getServerDir();
     const env: NodeJS.ProcessEnv = {
       ...process.env,
       PORT: String(PORT),
@@ -53,11 +65,15 @@ function startNextServer(): Promise<void> {
       ELECTRON_RUN_AS_NODE: "1",
     };
 
-    const child = spawn(process.execPath, [".next/standalone/server.js"], {
-      cwd: getProjectRoot(),
-      env,
-      stdio: "inherit",
-    });
+    const child = spawn(
+      process.execPath,
+      [path.join(serverDir, ".next", "standalone", "server.js")],
+      {
+        cwd: serverDir,
+        env,
+        stdio: "inherit",
+      },
+    );
 
     nextServer = child;
     child.on("error", reject);
