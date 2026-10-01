@@ -11,7 +11,8 @@ Sin esto no hay `.msi` y el job Windows queda rojo.
 
 ## Scope
 - `scripts/standalone-assets.mjs`: MATERIALIZA los symlinks hasheados como copias reales (no borrar: los chunks de Turbopack hacen require del nombre hasheado literal; borrarlos rompió el runtime con `Cannot find module better-sqlite3-<hash>` — error mío, verificado con el specifier equivocado).
-- Solo symlinks `*-<16 hex>` cuyo target quede dentro de standalone; dangling → se eliminan; escapes → se conservan con warning.
+- Sin guarda de "dentro de standalone": en Windows los links apuntan FUERA (al node_modules del repo, que ni se empaqueta), así que conservarlos nunca es correcto. Simulado en local con link externo: materializa y resuelve.
+- Solo symlinks `*-<16 hex>`; dangling → se eliminan.
 - Verificación: build local + `createRequire` del specifier hasheado desde ruta anidada (resuelve Y carga el nativo) + 0 symlinks en standalone + CI Windows del push.
 
 ## Out of scope

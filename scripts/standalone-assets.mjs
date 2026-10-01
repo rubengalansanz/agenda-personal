@@ -1,12 +1,5 @@
-import {
-  cpSync,
-  existsSync,
-  lstatSync,
-  readdirSync,
-  realpathSync,
-  rmSync,
-} from "node:fs";
-import { join, relative, resolve } from "node:path";
+import { cpSync, existsSync, lstatSync, readdirSync, realpathSync, rmSync } from "node:fs";
+import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
@@ -27,10 +20,11 @@ if (existsSync(staticSrc)) {
 }
 
 // Next's file tracing leaves hashed symlinks (e.g. `better-sqlite3-<hash>`)
-// under `.next/standalone/.next/node_modules/` pointing at the real dirs in
-// `.next/standalone/node_modules/`. Turbopack-compiled chunks require those
-// HASHED names literally, so the links (or equivalent real dirs) MUST stay —
-// but WiX (Windows MSI) chokes on symlinks. Materialize them as real copies.
+// under `.next/standalone/.next/node_modules/`. Turbopack-compiled chunks
+// require those HASHED names literally, so they MUST resolve at runtime — but
+// WiX (Windows MSI) chokes on symlinks. Materialize them as real copies
+// wherever the target lives (on some platforms it points outside standalone,
+// into paths that aren't even packaged, so keeping the link is never right).
 const tracedModules = join(standalone, ".next", "node_modules");
 if (existsSync(tracedModules)) {
   for (const entry of readdirSync(tracedModules)) {
@@ -49,13 +43,6 @@ if (existsSync(tracedModules)) {
     } catch {
       console.warn(`standalone-assets: dangling link, removing ${entry}`);
       rmSync(full);
-      continue;
-    }
-    const inside =
-      relative(resolve(standalone), target) &&
-      !relative(resolve(standalone), target).startsWith("..");
-    if (!inside) {
-      console.warn(`standalone-assets: link escapes standalone, keeping ${entry}`);
       continue;
     }
     rmSync(full);
